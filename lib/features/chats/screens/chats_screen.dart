@@ -74,7 +74,7 @@ class ChatsScreen extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  'WhatsApp NE',
+                  'i-Chat',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
