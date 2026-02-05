@@ -5,12 +5,12 @@ class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
 
   bool _isLoading = false;
+
   bool _isLogin = false;
 
   bool get isLoading => _isLoading;
 
-  bool get isLogin => _isLoading;
-
+  bool get isLogin => _isLogin;
 
   Future<bool> login(String phone, String password) async {
     _isLoading = true;
@@ -33,5 +33,29 @@ class AuthProvider extends ChangeNotifier {
   void logout() {
     _isLogin = false;
     notifyListeners();
+  }
+
+  Future<bool> register(String phone, String password) async {
+    _isLoading = true;
+    notifyListeners();
+
+    await Future.delayed(const Duration(seconds: 2)); // simulation API
+
+    _isLoading = false;
+    notifyListeners();
+
+    return true; // succès
+  }
+
+  Future<bool> verifyOtp(String phone, String otp) async {
+    _isLoading = true;
+    notifyListeners();
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    _isLoading = false;
+    notifyListeners();
+
+    return otp == "123456"; // OTP simulé
   }
 }

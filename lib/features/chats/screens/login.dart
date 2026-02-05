@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../core/routes/app_routes.dart';
+import 'register.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -148,7 +149,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const Text("Pas de compte ?"),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.register);
+                    },
                     child: const Text('S\'inscrire'),
                   ),
                 ],

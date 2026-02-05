@@ -6,6 +6,8 @@ import '../../features/chats/screens/status_screen.dart';
 import '../../features/chats/screens/calls_screen.dart';
 import '../../features/chats/screens/home.dart';
 import '../../features/chats/screens/login.dart';
+import '../../features/chats/screens/register.dart';
+import '../../features/chats/screens/otp.dart';
 
 
 class AppRoutes {
@@ -16,6 +18,9 @@ class AppRoutes {
   static const status = '/status';
   static const calls = '/calls';
   static const login = '/login';
+  static const register = '/register';
+  static const otp = '/otp';
+
 
 
   static Map<String, WidgetBuilder> routes = {
@@ -26,5 +31,7 @@ class AppRoutes {
     status: (_) => StatusScreen(),
     calls: (_) => CallsScreen(),
     login: (_) => LoginScreen(),
+    register: (_) => RegisterScreen(),
+    otp: (_) => OtpScreen(),
   };
 }
