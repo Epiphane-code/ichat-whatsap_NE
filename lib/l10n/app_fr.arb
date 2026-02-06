@@ -1,42 +1,42 @@
 {
-  "nom_app": "i-Chat"
+  "app_name": "i-Chat",
   "login": "Connexion",
-  "logOut": "Deconnexion"
-  "signIn": "S'inscrire"
-  "telephone": "Numero de telephone",
+  "logout": "Déconnexion",
+  "sign_up": "S’inscrire",
+  "phone_number": "Numéro de téléphone",
   "password": "Mot de passe",
-  "password_confirme": "Confirmer mot de passe"
-  "changeLanguage": "Changer de langue"
-  "bienvenue": "Bienvenue sur i-Chat"
-  "me_connecter": "Me connecter"
-  "je_pas_de_compte": "Je n'ai pas de compte"
-  "connecter_et_continuer": "Veillez vous connecter pour continuer"
-  "en_ligne": "En ligne"
-  "message": "Message"
-  "appels": "Appels"
-  "status": "Status
-  "discussions": "Discussions"
-  "groupes": "Groupes"
-  "groupe_create": "Creer groupe"
-  "delete": "Supprimer"
-  "modifier": "Modifier"
-  "profile": "Profile"
-  "recherche": "Recherche"
-  "parametre": "Parametre"
-  "import": "Importer"
-  "download": "Telecharger"
-  "help": "Help"
-  "conditions": "Conditions d'utilisations"
-  "Assistance_IA": "Assistance IA"
-  "all": "Toutes"
-  "lu": "Lus"
-  "non_lu": "Non lus"
-  "langues": "Langues"
-  "mise_a_jour": "Mettre a jour de l'application"
-  "inviter": "Inviter"
-  "contact_us": "Nous Contacter"
-  "compte": "Compte"
-  "delete_compte": "Supprimer le compte"
-  "notifications": "Notifications"
-  "sons": "Sons"
+  "confirm_password": "Confirmer le mot de passe",
+  "change_language": "Changer de langue",
+  "welcome": "Bienvenue sur i-Chat",
+  "sign_in": "Me connecter",
+  "no_account": "Je n’ai pas de compte",
+  "login_to_continue": "Veuillez vous connecter pour continuer",
+  "online": "En ligne",
+  "message": "Message",
+  "calls": "Appels",
+  "status": "Statut",
+  "chats": "Discussions",
+  "groups": "Groupes",
+  "create_group": "Créer un groupe",
+  "delete": "Supprimer",
+  "edit": "Modifier",
+  "profile": "Profil",
+  "search": "Recherche",
+  "settings": "Paramètres",
+  "import": "Importer",
+  "download": "Télécharger",
+  "help": "Aide",
+  "terms": "Conditions d’utilisation",
+  "ai_assistance": "Assistance IA",
+  "all": "Tous",
+  "read": "Lus",
+  "unread": "Non lus",
+  "languages": "Langues",
+  "update_app": "Mettre à jour l’application",
+  "invite": "Inviter",
+  "contact_us": "Nous contacter",
+  "account": "Compte",
+  "delete_account": "Supprimer le compte",
+  "notifications": "Notifications",
+  "sounds": "Sons"
 }

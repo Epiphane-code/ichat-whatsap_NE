@@ -4,6 +4,6 @@ class AuthService {
     // Simulate network delay
     await Future.delayed(const Duration(seconds: 1));
     // Simple authentication logic
-    return phone == 'user' && password == '1234';
+    return phone == '9696' && password == '1234';
   }
 }
