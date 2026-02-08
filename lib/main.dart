@@ -7,24 +7,7 @@ import 'providers/auth_provider.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/langage_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-// void main() {
-//   runApp(MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       theme: AppTheme.lightTheme,
-//       initialRoute: AppRoutes.home,
-//       routes: AppRoutes.routes,
-//     );
-//   }R
 void main() {
   runApp(
     MultiProvider(

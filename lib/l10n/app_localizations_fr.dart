@@ -127,4 +127,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get sounds => 'Sons';
+
+  @override
+  String get contacts => 'Contacts';
+
+  @override
+  String get password_mine => 'minimum : 4 carateres';
 }

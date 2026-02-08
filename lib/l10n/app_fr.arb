@@ -38,5 +38,7 @@
   "account": "Compte",
   "delete_account": "Supprimer le compte",
   "notifications": "Notifications",
-  "sounds": "Sons"
+  "sounds": "Sons",
+  "contacts": "Contacts",
+  "password_mine": "minimum : 4 carateres"
 }

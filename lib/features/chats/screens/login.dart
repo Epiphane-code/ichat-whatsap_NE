@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/auth_provider.dart';
-import '../../../providers/langage_provider.dart';
 import '../../../core/routes/app_routes.dart';
-import '../../../l10n/app_localizations.dart';
+import 'package:ichat/l10n/app_localizations.dart';
+import 'package:ichat/features/chats/widgets/langageButton_tile.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -111,12 +111,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-        
                 TextFormField(
                   controller: passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    labelText: 'Mot de passe',
+                    labelText: AppLocalizations.of(context)!.password,
                     prefixIcon: const Icon(Icons.lock),
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
@@ -134,14 +133,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.length < 4) {
-                      return 'Mot de passe trop court';
+                      // ignore: prefer_interpolation_to_compose_strings
+                      return AppLocalizations.of(context)!.password + ' (min 4 caractères)';
                     }
                     return null;
                   },
                 ),
-        
+
                 const SizedBox(height: 24),
-        
+
                 SizedBox(
                   width: double.infinity,
                   height: 48,
@@ -151,39 +151,25 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? const CircularProgressIndicator(
                             color: Color.fromARGB(255, 4, 212, 66),
                           )
-                        : const Text('Se connecter'),
+                        : Text(AppLocalizations.of(context)!.login,
                   ),
-                ),
+                ),),
                 const SizedBox(height: 16),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Pas de compte ?"),
+                    Text(AppLocalizations.of(context)!.no_account),
                     TextButton(
                       onPressed: () {
                         Navigator.pushNamed(context, AppRoutes.register);
                       },
-                      child: const Text('S\'inscrire'),
+                      child: Text(AppLocalizations.of(context)!.sign_up),
                     ),
                   ],
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Widget languageButton(
-                      BuildContext context,
-                      String code,
-                      String name,
-                    ) {
-                      return ListTile(
-                        title: Text(name),
-                        onTap: () {
-                          final lang = context.read<LanguageProvider>();
-                          lang.changeLanguage(code); // ← Change la langue
-                          Navigator.pop(context); // ferme le bottom sheet
-                        },
-                      );
-                    }
-        
                     // Afficher un menu pour choisir la langue
                     showModalBottomSheet(
                       context: context,

@@ -1,62 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:faker/faker.dart';
-import '../models/chat_model.dart';
-import '../widgets/chat_tile.dart';
-import '../../../core/routes/app_routes.dart';
+import 'package:ichat/features/chats/models/chat_model.dart';
+import 'package:ichat/features/chats/widgets/chat_tile.dart';
+import 'package:ichat/core/routes/app_routes.dart';
+import 'package:ichat/features/chats/db/chatDB.dart';
 
 class ChatsScreen extends StatelessWidget {
   const ChatsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final faker = Faker();
-    final photos  = [
-      'assets/images_profile/p1.jpg',
-      'assets/images_profile/p2.jpg',
-      'assets/images_profile/p3.jpg',
-      'assets/images_profile/p4.jpg',
-      'assets/images_profile/p5.jpg',
-      'assets/images_profile/p6.jpg',
-      'assets/images_profile/p7.jpg',
-      'assets/images_profile/p8.jpg',
-      'assets/images_profile/p9.jpg',
-      'assets/images_profile/p10.jpg',
-    ];
-    final noms = [
-      'Omar',
-      'Issa Boukari',
-      'Rachid Idi',
-      'Ousmane Diallo',
-      'Djamilou boucar',
-      'Papa',
-      'Karima',
-      'Myriam',
-      'Soumaila Abdou',
-      'Adamou Moumouni',
-      'Fatoumata',
-      'Amina',
-      'Yacouba',
-      'Salifou',
-      'Hassan',
-      'Boubey',
-      'Khadija',
-      'Laila',
-      'Nadia',
-      'Saidatou',
-    ];
-
-    final chats = List.generate(
-      20,
-      (_) => Chat(
-        name: noms[faker.randomGenerator.integer(noms.length - 1)],
-        message: faker.lorem.sentence(),
-        time:
-            '${faker.randomGenerator.integer(12)}:${faker.randomGenerator.integer(59)}',
-        unreadCount: faker.randomGenerator.integer(3),
-        avatarUrl: photos[faker.randomGenerator.integer(photos.length - 1)],
-
-      ),
-    );
     return Column(
       children: [
         Container(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ichat/features/chats/screens/contacts_screen.dart';
-import '../../../core/routes/app_routes.dart';
-
+import 'package:ichat/core/routes/app_routes.dart';
+import 'package:ichat/l10n/app_localizations.dart';
 import 'chats_screen.dart';
 import 'status_screen.dart';
 import 'calls_screen.dart';
@@ -49,11 +49,11 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
 
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chats'),
-          BottomNavigationBarItem(icon: Icon(Icons.contacts), label: 'contacts'),
-          BottomNavigationBarItem(icon: Icon(Icons.camera_alt),label: 'Status',),
-          BottomNavigationBarItem(icon: Icon(Icons.call), label: 'Appels'),
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: AppLocalizations.of(context)!.chats),
+          BottomNavigationBarItem(icon: Icon(Icons.contacts), label: AppLocalizations.of(context)!.contacts),
+          BottomNavigationBarItem(icon: Icon(Icons.camera_alt),label: AppLocalizations.of(context)!.status,),
+          BottomNavigationBarItem(icon: Icon(Icons.call), label: AppLocalizations.of(context)!.calls),
         ],
       ),
     );

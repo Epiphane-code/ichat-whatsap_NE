@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/api_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
+  final ApiService _apiService = ApiService();
+
+  List users = [];
 
   bool _isLoading = false;
 
@@ -57,5 +61,20 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     return otp == "123456"; // OTP simulé
+  }
+
+  Future<List> fetchUsers() async {
+    _isLoading = true;
+    notifyListeners();
+    if (_isLogin) {
+      final fetchedUsers = await _apiService.fetchUsers();
+      users = fetchedUsers;
+      notifyListeners();
+      return users;
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return users; // retourne la liste des utilisateurs
   }
 }

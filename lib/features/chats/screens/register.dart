@@ -64,75 +64,77 @@ class _RegisterScreenState extends State<RegisterScreen> {
         title: const Text('Inscription'),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Icon(Icons.person_add, size: 80, color: Theme.of(context).primaryColor,),
-              const SizedBox(height: 24),
-
-              TextFormField(
-                controller: phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Numéro de téléphone',
-                  prefixIcon: Icon(Icons.phone),
-                  border: OutlineInputBorder(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Icon(Icons.person_add, size: 80, color: Theme.of(context).primaryColor,),
+                const SizedBox(height: 20),
+        
+                TextFormField(
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(
+                    labelText: 'Numéro de téléphone',
+                    prefixIcon: Icon(Icons.phone),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) =>
+                      value == null || value.isEmpty
+                          ? 'Numéro requis'
+                          : null,
                 ),
-                validator: (value) =>
-                    value == null || value.isEmpty
-                        ? 'Numéro requis'
-                        : null,
-              ),
-
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: passwordController,
-                obscureText: _obscurePassword,
-                decoration: const InputDecoration(
-                  labelText: 'Mot de passe',
-                  prefixIcon: Icon(Icons.lock),
-                  border: OutlineInputBorder(),
+        
+                const SizedBox(height: 16),
+        
+                TextFormField(
+                  controller: passwordController,
+                  obscureText: _obscurePassword,
+                  decoration: const InputDecoration(
+                    labelText: 'Mot de passe',
+                    prefixIcon: Icon(Icons.lock),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) =>
+                      value != null && value.length >= 4
+                          ? null
+                          : 'Mot de passe trop court',
                 ),
-                validator: (value) =>
-                    value != null && value.length >= 4
-                        ? null
-                        : 'Mot de passe trop court',
-              ),
-
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: confirmPasswordController,
-                obscureText: _obscurePassword,
-                decoration: const InputDecoration(
-                  labelText: 'Confirmer le mot de passe',
-                  prefixIcon: Icon(Icons.lock_outline),
-                  border: OutlineInputBorder(),
+        
+                const SizedBox(height: 16),
+        
+                TextFormField(
+                  controller: confirmPasswordController,
+                  obscureText: _obscurePassword,
+                  decoration: const InputDecoration(
+                    labelText: 'Confirmer le mot de passe',
+                    prefixIcon: Icon(Icons.lock_outline),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) =>
+                      value == passwordController.text
+                          ? null
+                          : 'Les mots de passe ne correspondent pas',
                 ),
-                validator: (value) =>
-                    value == passwordController.text
-                        ? null
-                        : 'Les mots de passe ne correspondent pas',
-              ),
-
-              const SizedBox(height: 24),
-
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed:
-                      auth.isLoading ? null : () => _register(context),
-                  child: auth.isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text('Créer un compte'),
+        
+                const SizedBox(height: 24),
+        
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed:
+                        auth.isLoading ? null : () => _register(context),
+                    child: auth.isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text('Créer un compte'),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
