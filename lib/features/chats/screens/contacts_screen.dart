@@ -124,6 +124,7 @@ class _ContactsWidgetState extends State<ContactsWidget> {
                           ),
                           title: Text(contact.username),
                           subtitle: Text(contact.phone),
+                          trailing: Text('Message'),
                           onTap: () {
                             // Exemple action sur le contact
                           },
