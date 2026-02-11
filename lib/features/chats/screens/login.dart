@@ -18,7 +18,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -34,22 +33,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final success = await auth.login(
       phoneController.text.trim(), // trim() pour enlever les espaces
-      passwordController.text.trim(),
     );
 
     if (!mounted) return;
 
     if (success) {
+
       // ignore: use_build_context_synchronously
-      Navigator.pushReplacementNamed(context, AppRoutes.home);
-    } else {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Numéro ou mot de passe incorrect'),
-          backgroundColor: Colors.redAccent,
-        ),
+      Navigator.pushReplacementNamed(
+        context,
+        AppRoutes.home,
+        arguments: phoneController.text.trim(),
       );
+    } else {
+       // ignore: use_build_context_synchronously
+       Navigator.pushReplacementNamed(
+        context,
+        AppRoutes.otp,
+        arguments: phoneController.text.trim(),
+  );
     }
   }
 
@@ -62,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Theme.of(context).primaryColor,
         title: Text(
           AppLocalizations.of(context)!.login,
-          overflow: TextOverflow.ellipsis, // tronque avec "..."
+          overflow: TextOverflow.ellipsis, //  "..."
           maxLines: 1,
           style: const TextStyle(color: Colors.white),
         ),
@@ -111,34 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
-                  controller: passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.password,
-                    prefixIcon: const Icon(Icons.lock),
-                    border: const OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.length < 4) {
-                      // ignore: prefer_interpolation_to_compose_strings
-                      return AppLocalizations.of(context)!.password + ' (min 4 caractères)';
-                    }
-                    return null;
-                  },
-                ),
+                
 
                 const SizedBox(height: 24),
 

@@ -1,74 +1,135 @@
 import 'package:flutter/material.dart';
-import 'package:ichat/core/routes/app_routes.dart';
-import 'package:ichat/features/chats/models/chat_model.dart';
-import 'package:ichat/features/chats/widgets/contact_tile.dart';
-import 'package:ichat/l10n/app_localizations.dart';
-import 'package:ichat/features/chats/db/personDB.dart';
+import 'package:ichat/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
-class ContactsScreen extends StatelessWidget {
-  const ContactsScreen({super.key});
+class ContactsWidget extends StatefulWidget {
+  const ContactsWidget({super.key});
+
+  @override
+  State<ContactsWidget> createState() => _ContactsWidgetState();
+}
+
+class _ContactsWidgetState extends State<ContactsWidget> {
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadContacts();
+  }
+
+  Future<void> _loadContacts() async {
+    final auth = context.read<AuthProvider>();
+    if (auth.userID != null) {
+      setState(() {
+        _isLoading = true;
+      });
+      await auth.fetchMyContacts();
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _showAddContactDialog() async {
+    final nameController = TextEditingController();
+    final phoneController = TextEditingController();
+
+    final result = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ajouter un contact'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: 'Nom'),
+            ),
+            TextField(
+              controller: phoneController,
+              decoration: const InputDecoration(labelText: 'Téléphone'),
+              keyboardType: TextInputType.phone,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: const Text('Annuler')
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Ajouter'),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      final name = nameController.text.trim();
+      final phone = phoneController.text.trim();
+      if (name.isNotEmpty && phone.isNotEmpty) {
+        final auth = context.read<AuthProvider>();
+        await auth.addContact(name, phone);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+
     return Column(
       children: [
         Container(
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.grey.shade300, width: 1),
-            ),
-          ),
           height: 50,
-          alignment: Alignment.centerLeft,
           padding: const EdgeInsets.symmetric(horizontal: 16),
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+          ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                AppLocalizations.of(context)!.contacts,
+              const Text(
+                'Mes Contacts',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: _showAddContactDialog,
               ),
             ],
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            itemCount: contacts.length,
-            itemBuilder: (context, index) {
-              final contactIndex = contacts[index];
-              // ignore: unused_local_variable
-              final Chat contactArg = Chat(
-                name: contactIndex.name,
-                message: '',
-                time: '',
-                unreadCount: 0,
-                avatarUrl: '',
-              );
-
-              return ContactTile(
-                contact: contactIndex,
-                onTapMessage: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.chatDetail,
-                    arguments: Chat(
-                      name: contactIndex.name,
-                      message: '',
-                      time: '',
-                      unreadCount: 0,
-                      avatarUrl: contactIndex.avatarUrl,
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : auth.contacts.isEmpty
+                  ? const Center(child: Text('Aucun contact trouvé'))
+                  : ListView.builder(
+                      itemCount: auth.contacts.length,
+                      itemBuilder: (context, index) {
+                        final contact = auth.contacts[index];
+                        return ListTile(
+                          leading: CircleAvatar(
+                            child: Text(contact.username.isNotEmpty
+                                ? contact.username[0].toUpperCase()
+                                : '?'),
+                          ),
+                          title: Text(contact.username),
+                          subtitle: Text(contact.phone),
+                          onTap: () {
+                            // Exemple action sur le contact
+                          },
+                        );
+                      },
                     ),
-                  );
-                },
-                onTapCall: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.calls,
-                    arguments: contacts[index],
-                  );
-                },
-              );
-            },
-          ),
         ),
       ],
     );

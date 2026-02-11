@@ -1,15 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:faker/faker.dart';
 import 'package:ichat/features/chats/models/chat_model.dart';
 import 'package:ichat/features/chats/widgets/chat_tile.dart';
 import 'package:ichat/core/routes/app_routes.dart';
-import 'package:ichat/features/chats/db/chatDB.dart';
+import 'package:ichat/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
-class ChatsScreen extends StatelessWidget {
+class ChatsScreen extends StatefulWidget {
   const ChatsScreen({super.key});
 
   @override
+  State<ChatsScreen> createState() => _ChatsScreenState();
+}
+
+class _ChatsScreenState extends State<ChatsScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+
+      if (auth.userID != null) {
+        auth.fetchDiscussions();
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+
     return Column(
       children: [
         Container(
@@ -27,7 +48,7 @@ class ChatsScreen extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  'i-Chat',
+                  "Chats",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -41,28 +62,31 @@ class ChatsScreen extends StatelessWidget {
             ),
           ),
         ),
+
+        /// 🔥 Liste des discussions dynamiques
         Expanded(
-          child: ListView.builder(
-              itemCount: chats.length,
-              itemBuilder: (context, index) {
-                return ChatTile(
-                  chat: chats[index],
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRoutes.chatDetail,
-                      arguments: Chat(
-                        name: chats[index].name,
-                        message: chats[index].message,
-                        time: chats[index].time,
-                        unreadCount: chats[index].unreadCount,
-                        avatarUrl: chats[index].avatarUrl,
-                      ),
+          child: auth.discussionContacts.isEmpty
+              ? Center(child: Text("Aucune discussion"))
+              : ListView.builder(
+                  itemCount: auth.discussionContacts.length,
+                  itemBuilder: (context, index) {
+                    final contactId = auth.discussionContacts[index];
+
+                    return ListTile(
+                      leading: Text('icon'),
+                      title: Text("Discussion avec ID $contactId"),
+                      subtitle: Text('message'),
+                      trailing: Text('right'),
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.chatDetail,
+                          arguments: contactId,
+                        );
+                      },
                     );
                   },
-                );
-              },
-          ),
+                ),
         ),
       ],
     );

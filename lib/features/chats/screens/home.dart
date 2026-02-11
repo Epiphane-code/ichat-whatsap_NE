@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ichat/features/chats/screens/contacts_screen.dart';
 import 'package:ichat/core/routes/app_routes.dart';
 import 'package:ichat/l10n/app_localizations.dart';
+import 'package:ichat/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 import 'chats_screen.dart';
 import 'status_screen.dart';
 import 'calls_screen.dart';
@@ -21,11 +23,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _screens = [ChatsScreen(), ContactsScreen(), StatusScreen(), CallsScreen()];
+    _screens = [ChatsScreen(), ContactsWidget(), StatusScreen(), CallsScreen()];
   }
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.read<AuthProvider>();
+    if (!auth.isLogin){
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
+    }
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: SafeArea(child: _screens[_currentIndex]),
