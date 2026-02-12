@@ -1,11 +1,10 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:ichat/features/chats/models/messageModel.dart';
 import 'package:ichat/services/api_service.dart';
 import 'package:ichat/features/chats/models/contact_model.dart';
+import 'package:ichat/features/chats/models/discussionsModel.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final _storage = FlutterSecureStorage();
   final ApiService _apiService = ApiService();
 
   List users = [];
@@ -19,14 +18,17 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<int> _discussionContacts = [];
+  List<Discussion> _discussionContacts = [];
 
-  List<int> get discussionContacts => _discussionContacts;
+  List<Discussion> get discussionContacts => _discussionContacts;
 
 
   List<Contact> _contacts = [];
 
   List<Contact> get contacts => _contacts;
+
+  List<Message> _messages = [];
+  List<Message> get messages => _messages;
 
   String? _number = '';
 
@@ -91,7 +93,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     final success = await _apiService.verifyOtp(phone, otp);
-    print('Résultat de la vérification OTP : $success');
     _isLoading = false;
     notifyListeners();
     if (success) {
@@ -100,7 +101,6 @@ class AuthProvider extends ChangeNotifier {
       loadToken();
       notifyListeners();
       _isLoading = false;
-      print('Token chargé : $_token');
     }
     notifyListeners();
 
@@ -116,7 +116,6 @@ class AuthProvider extends ChangeNotifier {
       _contacts.add(contact);
       notifyListeners();
     } catch (e) {
-      print("Erreur création contact : $e");
     }
   }
 
@@ -128,7 +127,6 @@ class AuthProvider extends ChangeNotifier {
       _contacts = await _apiService.getMyContacts(_userID!);
       notifyListeners();
     } catch (e) {
-      print("Erreur fetch contacts : $e");
     }
   }
 
@@ -155,9 +153,38 @@ Future<void> fetchDiscussions() async {
     _discussionContacts =
         await _apiService.getMyDiscussions(_userID!);
     notifyListeners();
-  } catch (e) {
-    print("Erreur fetch discussions: $e");
+  } catch (e) { e;
   }
 }
+
+
+
+Future<void> fetchMessages(int contactId) async {
+  if (_userID == null) return;
+
+  try {
+    _messages = await _apiService.getMessages(_userID!, contactId);
+    notifyListeners();
+  } catch (e) { e;
+  }
+}
+
+Future<void> sendMessage(int receiverId, String content) async {
+  if (_userID == null) return;
+
+  try {
+    final message = await _apiService.sendMessage(
+      _userID!,
+      receiverId,
+      content,
+    );
+
+    _messages.add(message); // 🔥 ajout immédiat
+    notifyListeners();
+  } catch (e) {
+    print("Erreur envoi message : $e");
+  }
+}
+
 
 }

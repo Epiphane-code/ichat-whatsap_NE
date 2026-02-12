@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ichat/core/routes/app_routes.dart';
+import 'package:ichat/features/chats/models/discussionsModel.dart';
 import 'package:ichat/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -108,30 +110,46 @@ class _ContactsWidgetState extends State<ContactsWidget> {
           ),
         ),
         Expanded(
-          child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : auth.contacts.isEmpty
-                  ? const Center(child: Text('Aucun contact trouvé'))
-                  : ListView.builder(
-                      itemCount: auth.contacts.length,
-                      itemBuilder: (context, index) {
-                        final contact = auth.contacts[index];
-                        return ListTile(
-                          leading: CircleAvatar(
-                            child: Text(contact.username.isNotEmpty
-                                ? contact.username[0].toUpperCase()
-                                : '?'),
-                          ),
-                          title: Text(contact.username),
-                          subtitle: Text(contact.phone),
-                          trailing: Text('Message'),
-                          onTap: () {
-                            // Exemple action sur le contact
-                          },
-                        );
-                      },
-                    ),
-        ),
+  child: Builder(
+    builder: (context) {
+      if (_isLoading) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (auth.contacts.isEmpty || auth.discussionContacts.isEmpty) {
+        return const Center(child: Text('Aucun contact trouvé'));
+      }
+
+      // Sécuriser la longueur pour éviter un index out of range
+      final itemCount = auth.contacts.length < auth.discussionContacts.length
+          ? auth.contacts.length
+          : auth.discussionContacts.length;
+
+      return ListView.builder(
+        itemCount: itemCount,
+        itemBuilder: (context, index) {
+          final contact = auth.contacts[index];
+          final info = auth.discussionContacts[index];
+
+          return ListTile(
+            leading: CircleAvatar (child: Icon(Icons.person)),
+            title: Text(contact.username),
+            subtitle: Text(contact.phone),
+            trailing: const Text('Message'),
+            onTap: () {
+              // Naviguer après le build pour éviter rebuild loop
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pushNamed(context, AppRoutes.chatDetail,
+                    arguments: info);
+              });
+            },
+          );
+        },
+      );
+    },
+  ),
+),
+
       ],
     );
   }
