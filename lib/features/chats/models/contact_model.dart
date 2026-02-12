@@ -21,9 +21,9 @@ class Contact {
 
   factory Contact.fromJson(Map<String, dynamic> json) {
     return Contact(
-      id: json['id'],
-      username: json['username'],
-      phone: json['phone'],
+      id: json['id'] ?? 0,
+      username: json['username'] ?? '',
+      phone: json['phone'] ?? '',
     );
   }
 

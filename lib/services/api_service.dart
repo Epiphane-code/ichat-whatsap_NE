@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:ichat/features/chats/models/discussionsModel.dart';
 import 'package:ichat/features/chats/models/users.dart';
 import 'package:ichat/features/chats/models/contact_model.dart';
+import 'package:ichat/features/chats/models/messageModel.dart';
+
 
 class ApiService {
-  static const String _baseUrl = 'http://127.0.0.1:8000';
+  static const String _baseUrl = 'http://10.255.84.125:8000';
 
  Future<int?> login(String phone) async {
   final response = await http.get(
@@ -128,20 +131,60 @@ class ApiService {
     }
   }
 
-  Future<List<int>> getMyDiscussions(int myId) async {
+  Future<List<Discussion>> getMyDiscussions(int userId) async {
   final response = await http.get(
-    Uri.parse('$_baseUrl/messages/discussions/$myId'),
+    Uri.parse('$_baseUrl/messages/discussions/$userId'),
+    headers: {'Content-Type': 'application/json'},
   );
 
   if (response.statusCode == 200) {
-    final List<dynamic> data = jsonDecode(response.body);
+    final List data = jsonDecode(response.body);
 
-    return data
-        .map<int>((item) => item['contact_id'] as int)
-        .toList();
+    return data.map((e) => Discussion.fromJson(e)).toList();
   } else {
-    throw Exception('Erreur récupération discussions');
+    throw Exception("Erreur récupération discussions");
   }
 }
+
+
+Future<List<Message>> getMessages(int userId, int contactId) async {
+  final response = await http.get(
+    Uri.parse('$_baseUrl/messages/messages/$userId/$contactId'),
+    headers: {'Content-Type': 'application/json'},
+  );
+
+  if (response.statusCode == 200) {
+    final List data = jsonDecode(response.body);
+    return data.map((e) => Message.fromJson(e)).toList();
+  } else {
+    throw Exception("Erreur récupération messages");
+  }
+}
+
+Future<Message> sendMessage(
+    int senderId,
+    int receiverId,
+    String content,
+) async {
+  final response = await http.post(
+    Uri.parse('$_baseUrl/messages/send'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'sender_id': senderId,
+      'receiver_id': receiverId,
+      'content': content,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return Message.fromJson(data);
+  } else {
+    throw Exception('Erreur envoi message');
+  }
+}
+
+
+
 
 }

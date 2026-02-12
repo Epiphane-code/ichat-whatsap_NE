@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ichat/features/chats/models/chat_model.dart';
-import 'package:ichat/features/chats/widgets/chat_tile.dart';
 import 'package:ichat/core/routes/app_routes.dart';
 import 'package:ichat/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -70,18 +68,22 @@ class _ChatsScreenState extends State<ChatsScreen> {
               : ListView.builder(
                   itemCount: auth.discussionContacts.length,
                   itemBuilder: (context, index) {
-                    final contactId = auth.discussionContacts[index];
+                    final discussion = auth.discussionContacts[index];
 
                     return ListTile(
-                      leading: Text('icon'),
-                      title: Text("Discussion avec ID $contactId"),
-                      subtitle: Text('message'),
-                      trailing: Text('right'),
+                      leading: CircleAvatar(
+              child: Text(discussion.username.isNotEmpty
+                  ? discussion.username[0].toUpperCase()
+                  : '?'),
+            ),
+                    title: Text(discussion.username),
+                      subtitle: Text(discussion.lastMessage),
+                      trailing: Text('${discussion.lastMessageTime.hour} : ${discussion.lastMessageTime.minute}'),
                       onTap: () {
                         Navigator.pushNamed(
                           context,
                           AppRoutes.chatDetail,
-                          arguments: contactId,
+                          arguments: discussion,
                         );
                       },
                     );
