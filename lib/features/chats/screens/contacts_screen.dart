@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ichat/core/routes/app_routes.dart';
-import 'package:ichat/features/chats/models/discussionsModel.dart';
 import 'package:ichat/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -14,26 +13,36 @@ class ContactsWidget extends StatefulWidget {
 class _ContactsWidgetState extends State<ContactsWidget> {
   bool _isLoading = true;
 
+  /// 🔐 Cache pour éviter d’appeler l’API à chaque build
+  final Map<String, bool> _existenceCache = {};
+
   @override
   void initState() {
     super.initState();
-    _loadContacts();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadContacts();
+    });
   }
 
   Future<void> _loadContacts() async {
     final auth = context.read<AuthProvider>();
+
     if (auth.userID != null) {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() => _isLoading = true);
+
       await auth.fetchMyContacts();
-      setState(() {
-        _isLoading = false;
-      });
+      await auth.fetchDiscussions();
+
+      /// 🔐 Pré-charger la vérification des numéros
+      for (var contact in auth.contacts) {
+        final exists = await auth.existe(contact.phone);
+        _existenceCache[contact.phone] = exists;
+      }
+
+      setState(() => _isLoading = false);
     } else {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
     }
   }
 
@@ -41,7 +50,7 @@ class _ContactsWidgetState extends State<ContactsWidget> {
     final nameController = TextEditingController();
     final phoneController = TextEditingController();
 
-    final result = await showDialog(
+    final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Ajouter un contact'),
@@ -61,8 +70,8 @@ class _ContactsWidgetState extends State<ContactsWidget> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), 
-            child: const Text('Annuler')
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -75,9 +84,12 @@ class _ContactsWidgetState extends State<ContactsWidget> {
     if (result == true) {
       final name = nameController.text.trim();
       final phone = phoneController.text.trim();
+
       if (name.isNotEmpty && phone.isNotEmpty) {
         final auth = context.read<AuthProvider>();
+
         await auth.addContact(name, phone);
+        await _loadContacts();
       }
     }
   }
@@ -88,19 +100,25 @@ class _ContactsWidgetState extends State<ContactsWidget> {
 
     return Column(
       children: [
+        /// 🔝 Header
         Container(
           height: 50,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+            border: Border(
+              bottom: BorderSide(color: Colors.grey.shade300),
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
                 'Mes Contacts',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               IconButton(
                 icon: const Icon(Icons.add),
@@ -109,47 +127,58 @@ class _ContactsWidgetState extends State<ContactsWidget> {
             ],
           ),
         ),
+
+        /// 📋 Liste des contacts
         Expanded(
-  child: Builder(
-    builder: (context) {
-      if (_isLoading) {
-        return const Center(child: CircularProgressIndicator());
-      }
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : auth.contacts.isEmpty
+                  ? const Center(child: Text('Aucun contact trouvé'))
+                  : ListView.builder(
+                      itemCount: auth.contacts.length,
+                      itemBuilder: (context, index) {
+                        final contact = auth.contacts[index];
 
-      if (auth.contacts.isEmpty || auth.discussionContacts.isEmpty) {
-        return const Center(child: Text('Aucun contact trouvé'));
-      }
+                        /// 🔐 Récupérer l’état depuis le cache
+                        final existe =
+                            _existenceCache[contact.phone] ?? false;
 
-      // Sécuriser la longueur pour éviter un index out of range
-      final itemCount = auth.contacts.length < auth.discussionContacts.length
-          ? auth.contacts.length
-          : auth.discussionContacts.length;
+                        return ListTile(
+                          leading: const CircleAvatar(
+                            child: Icon(Icons.person),
+                          ),
+                          title: Text(contact.username),
+                          subtitle: Text(contact.phone),
 
-      return ListView.builder(
-        itemCount: itemCount,
-        itemBuilder: (context, index) {
-          final contact = auth.contacts[index];
-          final info = auth.discussionContacts[index];
+                          /// 📌 Indicateur visuel si le contact est sur iChat
+                          trailing: existe
+                              ? const Icon(Icons.message, color: Colors.green)
+                              : const Icon(Icons.person_add_alt_1,
+                                  color: Colors.grey),
 
-          return ListTile(
-            leading: CircleAvatar (child: Icon(Icons.person)),
-            title: Text(contact.username),
-            subtitle: Text(contact.phone),
-            trailing: const Text('Message'),
-            onTap: () {
-              // Naviguer après le build pour éviter rebuild loop
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.pushNamed(context, AppRoutes.chatDetail,
-                    arguments: info);
-              });
-            },
-          );
-        },
-      );
-    },
-  ),
-),
-
+                          onTap: existe
+                              ? () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.chatDetail,
+                                    arguments: {
+                                      'username': contact.username,
+                                      'phone': contact.phone,
+                                    },
+                                  );
+                                }
+                              : () {
+                                   ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          "Ce numéro n'est pas sur iChat"),
+                                    ),
+                                  );
+                                },
+                        );
+                      },
+                    ),
+        ),
       ],
     );
   }
