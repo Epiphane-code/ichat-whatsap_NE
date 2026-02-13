@@ -22,7 +22,6 @@ class AuthProvider extends ChangeNotifier {
 
   List<Discussion> get discussionContacts => _discussionContacts;
 
-
   List<Contact> _contacts = [];
 
   List<Contact> get contacts => _contacts;
@@ -109,13 +108,19 @@ class AuthProvider extends ChangeNotifier {
 
   // Créer un nouveau contact
   Future<void> addContact(String name, String phone) async {
-    if (_userID == null) return;
+    if (_userID == null) {
+      print('ID nul');
+      return;
+    }
 
     try {
       final contact = await _apiService.createContact(_userID!, name, phone);
+      print('creation de contact envoye depuis provider');
       _contacts.add(contact);
       notifyListeners();
+      // ignore: avoid_print
     } catch (e) {
+      print('ERROR : {$e}');
     }
   }
 
@@ -126,7 +131,9 @@ class AuthProvider extends ChangeNotifier {
     try {
       _contacts = await _apiService.getMyContacts(_userID!);
       notifyListeners();
+      // ignore: avoid_print
     } catch (e) {
+      print('ERROR : {$e}');
     }
   }
 
@@ -145,46 +152,50 @@ class AuthProvider extends ChangeNotifier {
     return users; // retourne la liste des utilisateurs
   }
 
- 
-Future<void> fetchDiscussions() async {
-  if (_userID == null) return;
+  Future<void> fetchDiscussions() async {
+    if (_userID == null) return;
 
-  try {
-    _discussionContacts =
-        await _apiService.getMyDiscussions(_userID!);
-    notifyListeners();
-  } catch (e) { e;
+    try {
+      _discussionContacts = await _apiService.getMyDiscussions(_userID!);
+      notifyListeners();
+    } catch (e) {
+      e;
+    }
   }
-}
 
+  Future<void> fetchMessages(int contactId) async {
+    if (_userID == null) return;
 
-
-Future<void> fetchMessages(int contactId) async {
-  if (_userID == null) return;
-
-  try {
-    _messages = await _apiService.getMessages(_userID!, contactId);
-    notifyListeners();
-  } catch (e) { e;
+    try {
+      _messages = await _apiService.getMessages(_userID!, contactId);
+      notifyListeners();
+    } catch (e) {
+      e;
+    }
   }
-}
 
-Future<void> sendMessage(int receiverId, String content) async {
-  if (_userID == null) return;
+  Future<void> sendMessage(int receiverId, String content) async {
+    if (_userID == null) return;
 
-  try {
-    final message = await _apiService.sendMessage(
-      _userID!,
-      receiverId,
-      content,
-    );
+    try {
+      final message = await _apiService.sendMessage(
+        _userID!,
+        receiverId,
+        content,
+      );
 
-    _messages.add(message); // 🔥 ajout immédiat
-    notifyListeners();
-  } catch (e) {
-    print("Erreur envoi message : $e");
+      _messages.add(message); // 🔥 ajout immédiat
+      notifyListeners();
+    } catch (e) {
+      print("Erreur envoi message : $e");
+    }
   }
-}
 
+  Future<bool> existe(String phone) async {
+    return _apiService.userExiste(phone);
+  }
 
+  Future<int> getID(String userphone) async {
+    return _apiService.userID(userphone);
+  }
 }

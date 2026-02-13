@@ -19,7 +19,7 @@ class Message {
       senderId: json['sender_id'] ?? 0,
       receiverId: json['receiver_id'] ?? 0,
       content: json['content'] ?? '',
-      createdAt: json['created_at'],
+      createdAt: json['created_at'] ?? '',
     );
   }
 }

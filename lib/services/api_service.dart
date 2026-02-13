@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:ichat/features/chats/models/discussionsModel.dart';
 import 'package:ichat/features/chats/models/users.dart';
@@ -44,6 +45,8 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      print('contact cree depuis api_service');
+
       return Contact.fromJson(data);
     } else {
       throw Exception('Erreur création contact : ${response.body}');
@@ -184,7 +187,45 @@ Future<Message> sendMessage(
   }
 }
 
+Future<bool> userExiste(String phone) async {
+  final response = await http.get(
+    Uri.parse('$_baseUrl/users/exists/$phone'),
+    headers: {'Content-Type': 'application/json'},
+  );
 
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return data['exists'] == true;
+  }
+
+  return false;
+}
+Future<int> userID(String phone) async {
+  final response = await http.post(
+    Uri.parse('$_baseUrl/users/getID'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'phone': phone.trim()}),
+  );
+
+  if (response.statusCode == 200) {
+    print('code 200 userID');
+    final data = jsonDecode(response.body);
+    print(response.body);
+    print(data['id']);
+    return data['id']; // renvoie 0 si le user n'existe pas
+  } else {
+
+    print('Error userID');
+
+    return 0; // API inaccessible ou autre erreur
+  }
+}
 
 
 }
+
+
+
+
+
+
