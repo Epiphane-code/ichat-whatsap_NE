@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ichat/core/routes/app_routes.dart';
+import 'package:ichat/features/chats/models/contact_model.dart';
 import 'package:ichat/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +22,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
       if (auth.userID != null) {
         auth.fetchDiscussions();
+        auth.fetchMyContacts();
+        
       }
     });
   }
@@ -69,21 +72,32 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   itemCount: auth.discussionContacts.length,
                   itemBuilder: (context, index) {
                     final discussion = auth.discussionContacts[index];
+                    String username = discussion.phone;
+                    String phone = discussion.phone;
+                    for(var cont in auth.contacts){
+                      if(cont.phone == discussion.phone){
+                        username = cont.username;
+                        break;
+                      }
+                    }
 
                     return ListTile(
                       leading: CircleAvatar(
-              child: Text(discussion.username.isNotEmpty
-                  ? discussion.username[0].toUpperCase()
+              child: Text(username.isNotEmpty
+                  ? username[0].toUpperCase()
                   : '?'),
             ),
-                    title: Text(discussion.username),
+                    title: Text(username),
                       subtitle: Text(discussion.lastMessage),
                       trailing: Text('${discussion.lastMessageTime.hour} : ${discussion.lastMessageTime.minute}'),
                       onTap: () {
                         Navigator.pushNamed(
                           context,
                           AppRoutes.chatDetail,
-                          arguments: discussion,
+                          arguments: {
+                            'username': username,
+                            'phone': phone
+                          },
                         );
                       },
                     );

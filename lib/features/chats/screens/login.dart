@@ -70,101 +70,102 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.welcome,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                  overflow: TextOverflow.ellipsis, // tronque avec "..."
-                  maxLines: 1,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  AppLocalizations.of(context)!.login_to_continue,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  overflow: TextOverflow.ellipsis, // tronque avec "..."
-                  maxLines: 1,
-                ),
-                const SizedBox(height: 32),
-                Icon(
-                  Icons.login_outlined,
-                  size: 80,
-                  color: Theme.of(context).primaryColor,
-                ),
-                const SizedBox(height: 24),
-                TextFormField(
-                  controller: phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.phone_number,
-                    prefixIcon: Icon(Icons.phone),
-                    border: OutlineInputBorder(),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.welcome,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                    overflow: TextOverflow.ellipsis, // tronque avec "..."
+                    maxLines: 1,
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!.phone_number;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-
-                const SizedBox(height: 24),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: auth.isLoading ? null : () => _login(context),
-                    child: auth.isLoading
-                        ? const CircularProgressIndicator(
-                            color: Color.fromARGB(255, 4, 212, 66),
-                          )
-                        : Text(AppLocalizations.of(context)!.login,
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(context)!.login_to_continue,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    overflow: TextOverflow.ellipsis, // tronque avec "..."
+                    maxLines: 1,
                   ),
-                ),),
-                const SizedBox(height: 16),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(AppLocalizations.of(context)!.no_account),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, AppRoutes.register);
-                      },
-                      child: Text(AppLocalizations.of(context)!.sign_up),
+                  const SizedBox(height: 32),
+                  Icon(
+                    Icons.login_outlined,
+                    size: 80,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(height: 24),
+                  TextFormField(
+                    controller: phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.phone_number,
+                      prefixIcon: Icon(Icons.phone),
+                      border: OutlineInputBorder(),
                     ),
-                  ],
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Afficher un menu pour choisir la langue
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (_) => ListView(
-                        children: [
-                          languageButton(context, 'fr', 'Français'),
-                          languageButton(context, 'en', 'English'),
-                          languageButton(context, 'ha', 'Hausa'),
-                          languageButton(context, 'dje', 'Zarma'),
-                          languageButton(context, 'ff', 'Fulfulde'),
-                          languageButton(context, 'taq', 'Touareg'),
-                          languageButton(context, 'kr', 'Kanuri'),
-                          languageButton(context, 'ar', 'Arabe'),
-                        ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return AppLocalizations.of(context)!.phone_number;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+
+                  const SizedBox(height: 24),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: auth.isLoading ? null : () => _login(context),
+                      child: auth.isLoading
+                          ? const CircularProgressIndicator(
+                              color: Color.fromARGB(255, 4, 212, 66),
+                            )
+                          : Text(AppLocalizations.of(context)!.login,
+                    ),
+                  ),),
+                  const SizedBox(height: 16),
+        
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(AppLocalizations.of(context)!.no_account),
+                      TextButton(
+                        onPressed: () {
+                        },
+                        child: Text(AppLocalizations.of(context)!.sign_up),
                       ),
-                    );
-                  },
-                  child: Text(AppLocalizations.of(context)!.change_language),
-                ),
-              ],
+                    ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Afficher un menu pour choisir la langue
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (_) => ListView(
+                          children: [
+                            languageButton(context, 'fr', 'Français'),
+                            languageButton(context, 'en', 'English'),
+                            languageButton(context, 'ha', 'Hausa'),
+                            languageButton(context, 'dje', 'Zarma'),
+                            languageButton(context, 'ff', 'Fulfulde'),
+                            languageButton(context, 'taq', 'Touareg'),
+                            languageButton(context, 'kr', 'Kanuri'),
+                            languageButton(context, 'ar', 'Arabe'),
+                          ],
+                        ),
+                      );
+                    },
+                    child: Text(AppLocalizations.of(context)!.change_language),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
