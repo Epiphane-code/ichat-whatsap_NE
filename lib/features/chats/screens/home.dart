@@ -13,9 +13,11 @@ class HomeScreen extends StatefulWidget {
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
+
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   int _currentIndex = 0;
 
   late final List<Widget> _screens;
@@ -23,7 +25,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+      final auth = context.read<AuthProvider>();
     _screens = [ChatsScreen(), ContactsWidget(), StatusScreen(), CallsScreen()];
+      auth.listenWebSocket();
+
+   
   }
 
   @override

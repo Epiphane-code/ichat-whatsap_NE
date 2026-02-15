@@ -12,7 +12,6 @@ class ChatsScreen extends StatefulWidget {
 }
 
 class _ChatsScreenState extends State<ChatsScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -23,7 +22,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
       if (auth.userID != null) {
         auth.fetchDiscussions();
         auth.fetchMyContacts();
-        
       }
     });
   }
@@ -37,10 +35,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
         Container(
           decoration: BoxDecoration(
             border: Border(
-              bottom: BorderSide(
-                color: Colors.grey.shade300,
-                width: 1,
-              ),
+              bottom: BorderSide(color: Colors.grey.shade300, width: 1),
             ),
           ),
           height: 50,
@@ -50,10 +45,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
               children: [
                 Text(
                   "Chats",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Expanded(child: Container()),
                 Icon(Icons.photo_camera, color: Colors.grey.shade700),
@@ -74,8 +66,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                     final discussion = auth.discussionContacts[index];
                     String username = discussion.phone;
                     String phone = discussion.phone;
-                    for(var cont in auth.contacts){
-                      if(cont.phone == discussion.phone){
+                    for (var cont in auth.contacts) {
+                      if (cont.phone == discussion.phone) {
                         username = cont.username;
                         break;
                       }
@@ -83,21 +75,20 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
                     return ListTile(
                       leading: CircleAvatar(
-              child: Text(username.isNotEmpty
-                  ? username[0].toUpperCase()
-                  : '?'),
-            ),
-                    title: Text(username),
+                        child: Text(
+                          username.isNotEmpty ? username[0].toUpperCase() : '?',
+                        ),
+                      ),
+                      title: Text(username),
                       subtitle: Text(discussion.lastMessage),
-                      trailing: Text('${discussion.lastMessageTime.hour} : ${discussion.lastMessageTime.minute}'),
+                      trailing: Text(
+                        '${discussion.lastMessageTime.hour} : ${discussion.lastMessageTime.minute}',
+                      ),
                       onTap: () {
                         Navigator.pushNamed(
                           context,
                           AppRoutes.chatDetail,
-                          arguments: {
-                            'username': username,
-                            'phone': phone
-                          },
+                          arguments: {'username': username, 'phone': phone},
                         );
                       },
                     );

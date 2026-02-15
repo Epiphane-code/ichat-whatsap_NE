@@ -1,13 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:ichat/features/chats/models/messageModel.dart';
 import 'package:ichat/services/api_service.dart';
 import 'package:ichat/features/chats/models/contact_model.dart';
 import 'package:ichat/features/chats/models/discussionsModel.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class AuthProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
 
   List users = [];
+
+  WebSocketChannel? channel;
 
   int? _userID;
 
@@ -77,6 +82,57 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  void listenWebSocket() {
+    if (_userID == null) {
+      print("WS annulé : userID null");
+      return;
+    }
+
+    if (channel != null) {
+      print("WS déjà connecté");
+      return;
+    }
+
+    final url = 'ws://10.249.240.125:8000/websocket/ws/$_userID';
+    print("Connexion WS → $url");
+
+    try {
+      channel = WebSocketChannel.connect(Uri.parse(url));
+
+      print('WS connecté');
+
+      channel!.stream.listen(
+        (data) {
+          print("WS DATA: $data");
+
+          final jsonData = jsonDecode(data);
+
+          if (jsonData['type'] == 'new_message') {
+            fetchMessages(jsonData["discussion_id"]); // 🔥 refresh liste discussions
+          }
+        },
+        onError: (error) {
+          print("WS ERROR: $error");
+          channel = null; // 🔥 permet de reconnecter plus tard
+        },
+        onDone: () {
+          print("WS CLOSED");
+          channel = null;
+        },
+        cancelOnError: true,
+      );
+    } catch (e) {
+      print("WS EXCEPTION: $e");
+      channel = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    channel?.sink.close();
+    super.dispose();
   }
 
   void logout() {

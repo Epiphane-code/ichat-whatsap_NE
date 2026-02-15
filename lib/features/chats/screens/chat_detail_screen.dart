@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:ichat/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +13,7 @@ class ChatDetailScreen extends StatefulWidget {
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   bool _isLoading = true;
   bool _initialized = false;
@@ -38,7 +41,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         if (!mounted) return;
 
         if (id == 0) {
-          /// ❌ pas inscrit sur iChat
           setState(() {
             contactId = 0;
             _isLoading = false;
@@ -46,11 +48,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           return;
         }
 
-        /// ✅ utilisateur iChat
         contactId = id;
 
-        /// 📥 charger messages
         await auth.fetchMessages(contactId);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients) {
+            _scrollController.jumpTo(_scrollController.position.maxScrollExtent,); // 🔥 reste en bas
+          }
+        });
 
         if (mounted) {
           setState(() {
@@ -85,47 +90,54 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         ),
       ),
       body: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-                  children: [
-                    /// 📜 LISTE DES MESSAGES
-                    Expanded(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.only(top: 10),
-                        itemCount: auth.messages.length,
-                        itemBuilder: (context, index) {
-                          final message = auth.messages[index];
-                          final isMe =
-                              message.senderId == auth.userID;
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                /// 📜 LISTE DES MESSAGES
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.only(top: 10),
+                    itemCount: auth.messages.length,
+                    itemBuilder: (context, index) {
+                      final message = auth.messages[index];
+                      final isMe = message.senderId == auth.userID;
 
-                          return Align(
-                            alignment: isMe
-                                ? Alignment.centerRight
-                                : Alignment.centerLeft,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 10),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: isMe
-                                    ? Colors.blue.shade300
-                                    : Colors.grey.shade300,
-                                borderRadius:
-                                    BorderRadius.circular(10),
-                              ),
-                              child: Text(message.content),
+                      return Align(
+                        alignment: isMe
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                            vertical: 5,
+                            horizontal: 10,
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: isMe
+                                ? const Color.fromARGB(255, 161, 211, 138)
+                                : const Color.fromARGB(255, 203, 245, 229),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Container(
+                             constraints: BoxConstraints(
+                              minWidth: 50,
+                              maxWidth: 250   // largeur minimale si vous voulez
+                             ),
+                            child: Text(message.content)
                             ),
-                          );
-                        },
-                      ),
-                    ),
-
-                    /// ✉️ INPUT MESSAGE
-                    _buildMessageInput(context, auth),
-
-                    const SizedBox(height: 10),
-                  ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
+
+                /// ✉️ INPUT MESSAGE
+                _buildMessageInput(context, auth),
+
+                const SizedBox(height: 10),
+              ],
+            ),
     );
   }
 
@@ -154,7 +166,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               await auth.sendMessage(contactId, text);
               controller.clear();
             },
-          )
+          ),
         ],
       ),
     );

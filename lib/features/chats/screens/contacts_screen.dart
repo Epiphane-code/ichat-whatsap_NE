@@ -13,7 +13,6 @@ class ContactsWidget extends StatefulWidget {
 class _ContactsWidgetState extends State<ContactsWidget> {
   bool _isLoading = true;
 
-  /// 🔐 Cache pour éviter d’appeler l’API à chaque build
   final Map<String, bool> _existenceCache = {};
 
   @override

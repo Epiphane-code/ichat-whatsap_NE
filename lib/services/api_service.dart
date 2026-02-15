@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:ichat/features/chats/models/discussionsModel.dart';
 import 'package:ichat/features/chats/models/users.dart';
@@ -8,9 +7,10 @@ import 'package:ichat/features/chats/models/messageModel.dart';
 
 
 class ApiService {
-  static const String _baseUrl = 'http://10.255.84.125:8000';
+  static const String _baseUrl = 'http://10.249.240.125:8000';
 
  Future<int?> login(String phone) async {
+  print('API');
   final response = await http.get(
     Uri.parse('$_baseUrl/users/exists/$phone'),
     headers: {'Content-Type': 'application/json'},
@@ -19,11 +19,14 @@ class ApiService {
   print('Réponse brute : ${response.body}');
 
   if (response.statusCode == 200) {
+    print('code 200');
     final data = jsonDecode(response.body);
 
     if (data['exists'] == true) {
+      print('true');
       return data['user_id'];
     }
+    print('nul');
     return null;
   } else {
     throw Exception('Erreur serveur');
